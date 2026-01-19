@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presensi Ketidakhadiran - SMKS Nasional Bandung</title>
+    <style>
+        /* Desain Background Gen Alfa (Modern Gradient) */
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: linear-gradient(135deg, #1e3799 0%, #0984e3 100%);
+            margin: 0; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh;
+            color: #2d3436;
+        }
+
+        /* Container dengan efek Glassmorphism */
+        .container { 
+            background: rgba(255, 255, 255, 0.95); 
+            padding: 30px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
+            width: 100%; 
+            max-width: 550px; 
+            text-align: center; 
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .logo-atas { height: 100px; width: auto; margin-bottom: 10px; }
+        
+        h2 { color: #d63031; margin-bottom: 5px; font-weight: 800; letter-spacing: 1px; }
+        h4 { color: #636e72; margin-top: 0; margin-bottom: 25px; font-weight: 400; }
+
+        label { font-weight: 600; display: block; margin-top: 15px; color: #2d3436; text-align: left; font-size: 14px; }
+
+        /* Input Modern */
+        select, input { 
+            width: 100%; 
+            padding: 12px; 
+            margin-top: 8px; 
+            border: 2px solid #dfe6e9; 
+            border-radius: 10px; 
+            font-size: 16px; 
+            transition: 0.3s;
+        }
+        select:focus, input:focus { border-color: #0984e3; outline: none; box-shadow: 0 0 8px rgba(9, 132, 227, 0.2); }
+
+        /* Status Container */
+        .status-container { 
+            display: flex; 
+            justify-content: space-around; 
+            margin-top: 15px; 
+            background: #f1f2f6; 
+            padding: 15px; 
+            border-radius: 12px; 
+        }
+        .status-option { display: flex; align-items: center; font-weight: bold; color: #d63031; cursor: pointer; }
+        .status-option input { width: auto; margin-right: 8px; transform: scale(1.3); }
+
+        /* Button Modern */
+        .btn { 
+            width: 100%; 
+            padding: 15px; 
+            border: none; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            font-weight: 700; 
+            transition: 0.4s; 
+            margin-top: 20px; 
+            text-transform: uppercase;
+        }
+        .btn-danger { background: #e74c3c; color: white; box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3); }
+        .btn-danger:hover { background: #c0392b; transform: translateY(-2px); }
+        .btn-danger:disabled { background: #bdc3c7; box-shadow: none; }
+
+        /* Tabel Rekap */
+        .rekap-section { 
+            width: 100%; 
+            max-width: 550px; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+        }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
+        th { background-color: #0984e3; color: white; border-radius: 5px; }
+
+        /* Footer Branding */
+        footer { text-align: center; margin-top: 30px; padding: 20px; color: white; width: 100%; }
+        .footer-brand { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 8px; }
+        .logo-footer { height: 40px; width: auto; filter: brightness(0) invert(1); }
+        .brand-text { font-size: 22px; font-weight: 900; letter-spacing: 1px; }
+        .dev-name { font-size: 14px; opacity: 0.9; }
+
+        .hidden { display: none; }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+    <img src="logo.png" alt="Logo Sekolah" class="logo-atas">
+    <h2>LAPOR KETIDAKHADIRAN</h2>
+    <h4>SMKS NASIONAL BANDUNG</h4>
+
+    <label>Pilih Kelas Kamu:</label>
+    <select id="kelasSelect" onchange="bukaInputAkses()">
+        <option value="" disabled selected>-- Klik di sini --</option>
+        <option value="X_DKV">X DKV</option>
+        <option value="X_MPLB">X MPLB</option>
+        <option value="X_TJKT">X TJKT</option>
+        <option value="XI_DKV">XI DKV</option>
+        <option value="XI_MPLB">XI MPLB</option>
+        <option value="XI_TJKT">XI TJKT</option>
+        <option value="XII_DKV">XII DKV</option>
+        <option value="XII_MPLB">XII MPLB</option>
+        <option value="XII_TJKT">XII TJKT</option>
+    </select>
+
+    <div id="sectionAkses" class="hidden">
+        <label>Password Akses Kelas:</label>
+        <input type="password" id="kodeAkses" placeholder="Masukkan kode...">
+        <button class="btn btn-danger" onclick="verifikasiAkses()">Buka Daftar Siswa</button>
+    </div>
+
+    <div id="sectionSiswa" class="hidden">
+        <label>Cari Nama Kamu:</label>
+        <input type="text" id="cariNama" placeholder="Ketik nama..." onkeyup="filterSiswa()">
+        <select id="daftarSiswa" size="5" style="margin-top: 10px;"></select>
+
+        <label>Kenapa Tidak Hadir?</label>
+        <div class="status-container">
+            <label class="status-option"><input type="radio" name="status" value="Sakit" checked> Sakit</label>
+            <label class="status-option"><input type="radio" name="status" value="Izin"> Izin</label>
+            <label class="status-option"><input type="radio" name="status" value="Alpa"> Alpa</label>
+        </div>
+
+        <button id="btnSimpan" class="btn btn-danger" onclick="simpanData()">Kirim Laporan ✨</button>
+    </div>
+</div>
+
+<div class="rekap-section">
+    <h3 style="margin-top:0; color: #0984e3; font-size: 18px;">🚀 Rekap Sesi Ini</h3>
+    <table id="tabelRekap">
+        <thead>
+            <tr>
+                <th>Nama</th>
+                <th>Kelas</th>
+                <th>Status</th>
+                <th>Waktu</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<footer>
+    <div class="footer-brand">
+        <img src="logo-ruas.png" alt="Logo RUAS" class="logo-footer">
+        <span class="brand-text">Ruas STuDiO</span>
+    </div>
+    <div class="dev-name">Developed with 🔥 by <strong>Hardianto</strong></div>
+</footer>
+
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwtMBW7vxhw6wV16JgE0jVCSs5VEantPpqKWdt3Y7CTuA1Cu5QECui1aNLumrQSI27z/exec";
+
+    const dataSekolah = {
+        "X_DKV": [{i:"0092293395", n:"Ana Rahma Niraswati"}, {i:"0081463415", n:"Andria Okta Dwiviandsyah"}, {i:"0091817222", n:"Az-Zahra Fajria Ramadhani"}, {i:"0098998307", n:"Christian Rizky Farrell"}, {i:"0108848574", n:"Elnazriel Caspian"}, {i:"3106225993", n:"Galih Utama Riyadi Putra"}, {i:"0098772582", n:"Razaan Hibatullah Al Maliik"}, {i:"0109484929", n:"Silfhia Nuraisyah Wiradi Sastra"}, {i:"0098044477", n:"Sohib Mubarok"}],
+        "X_MPLB": [{i:"0099725997", n:"Agustia Putri Rahmadhani"}, {i:"0078954842", n:"Alisa Kamala Ninayata"}, {i:"3092115176", n:"Alvira Firdaus"}, {i:"0106750773", n:"Eneng Sovi Nurpajiah"}, {i:"0091323786", n:"Hilda Hervina"}, {i:"3103376001", n:"Jihan Rinzani"}, {i:"0101740416", n:"Naila Putri Nur Hafizhah"}, {i:"0086772740", n:"Nasheila Widya"}, {i:"0104494308", n:"Nazwa Fadhila Furza"}, {i:"0094602409", n:"Oriza Sativa"}, {i:"0106327542", n:"Rani Novalia Putri"}, {i:"0102255451", n:"Ratna Nu Nengsih"}, {i:"0105567316", n:"Reni Lian Dari"}, {i:"0101641196", n:"Rini Rosita"}, {i:"3087181290", n:"Silvi Dwi Rahma"}, {i:"0093841277", n:"Siska Oktaviani"}, {i:"0105167884", n:"Tiara Priscillya"}],
+        "X_TJKT": [{i:"0091974851", n:"Arif Faith Ghofar"}, {i:"0098992472", n:"Azriel Anabiel Putra Wijaya"}, {i:"0091169985", n:"Dava Permana Ilham"}, {i:"0101975169", n:"Dimas Agustian"}, {i:"0093853218", n:"Dyas Adli Anugrah"}, {i:"0096553810", n:"Elphasa Ibrahim Adha"}, {i:"0104126058", n:"Januar Fadlan"}, {i:"0105259478", n:"M Gaza Ainurrafiq"}, {i:"0103886555", n:"Mochammad Deva Ramadhan"}, {i:"0105940202", n:"Mochammad Rafa Atepyan"}, {i:"3105031713", n:"Mugia Nugraha Putra"}, {i:"0109983046", n:"Muhamad Sidni Ilham"}, {i:"0096101736", n:"Saepul Mustofa"}, {i:"0099054670", n:"Tofik Prebiana"}, {i:"0096273419", n:"Vicky Refiansyah"}],
+        "XI_DKV": [{i:"0074940530", n:"Agil Firdaus Nugraha"}, {i:"0087365578", n:"Alya Agustina"}, {i:"0083783055", n:"Azka Muhammad Nazhif"}, {i:"0094370445", n:"Delima Nur Nazma Hermansyah"}, {i:"0087779327", n:"Fadhil Nazmulloh"}, {i:"0081396848", n:"Fahri Al Fattah"}, {i:"0088205734", n:"Fhadlan Irham"}, {i:"0084146547", n:"Jenni Agustin"}, {i:"3087536650", n:"Khansa Septri Ramadhan"}, {i:"0089855581", n:"Mochamad Keanu Jibran"}, {i:"0092248553", n:"Muhamad Rifki"}, {i:"0091515902", n:"Muhamad Tegar Ramdani"}, {i:"0094943916", n:"Muhammad Erlangga"}, {i:"0086208889", n:"Putri Ameliani"}, {i:"0095898319", n:"Sandi Saputra"}, {i:"0083162799", n:"Siska Khoirunnisa"}, {i:"0085141029", n:"Syakila Putri Ramadhani"}, {i:"0095817822", n:"Yola Amalia"}],
+        "XI_MPLB": [{i:"3095895753", n:"Azura Diana Merlin"}, {i:"0086223764", n:"Cahaya Putri Anastazqia"}, {i:"0084489785", n:"Davina Mozalita"}, {i:"0084099077", n:"Intan Nur Anggraeni"}, {i:"3092619726", n:"Juwita Anggraeni"}, {i:"0087204264", n:"Kartika Agustin"}, {i:"0086472434", n:"Keysa Aprilia Permatasari"}, {i:"0082653387", n:"Nadin Septi Maharani"}, {i:"0098083975", n:"Nafa Ridha Mayahdilatifa"}, {i:"0085736287", n:"Nayla Siti Putriawan"}, {i:"0082510247", n:"Novita Amellia"}, {i:"0088017260", n:"Nurul Aini"}, {i:"0081156828", n:"Sifa Nurfauziah"}, {i:"0085600465", n:"Silvani Aditia Putri"}, {i:"0084518330", n:"Suci Nur Ramadhani"}, {i:"0087799042", n:"Tiara Shandy Rahmadhani"}, {i:"0096644264", n:"Zahwa Azahra"}],
+        "XI_TJKT": [{i:"0085107388", n:"Adam Ias"}, {i:"0098330850", n:"Afrizal Yudha Pratama"}, {i:"0097546072", n:"Anggi Maulana"}, {i:"0097857313", n:"Anjar Pamungkas"}, {i:"0082927758", n:"Dila Agustin"}, {i:"0091109865", n:"Ismail Wangsa Taruna"}, {i:"0081082216", n:"Juanda"}, {i:"3082985888", n:"Kartika"}, {i:"0092871895", n:"Malki Ramdani"}, {i:"0086578372", n:"Mochamad Revan Fadilah"}, {i:"0096286960", n:"Muhamad Wildan"}, {i:"0086864146", n:"Muhammad Allexcha Fachromi"}, {i:"0094974964", n:"Muhammad Fathir Gunawan"}, {i:"0085562860", n:"Muhammad Iqbal"}, {i:"0076239169", n:"Rafky Pratama Putra"}, {i:"0082012017", n:"Rehan"}, {i:"0087754379", n:"Wisnu Wardana Putra"}],
+        "XII_DKV": [{i:"0078240729", n:"Abdul Azid"}, {i:"0074235463", n:"Ade Armi Saputra"}, {i:"0072059819", n:"Ahmad Zahran Naufal"}, {i:"0083484698", n:"Ahmed Deedat Attallah Charlan"}, {i:"0076302672", n:"Aliah Naila Putri"}, {i:"0072181717", n:"Anita Fitriawati"}, {i:"0071899362", n:"Arfan Alfahri Nurahman"}, {i:"0085801749", n:"Asti Widianingsih"}, {i:"3056733215", n:"Aura Nurmala"}, {i:"0081122718", n:"Daffa Putra Ramadhan"}, {i:"0082937748", n:"Dhimas Bagas Prasetya"}, {i:"0087799279", n:"Dini Fitriani"}, {i:"0082729112", n:"Efriyansyah Putera Pratama"}, {i:"0081077797", n:"Fazli Althof Nugraha"}, {i:"0087114674", n:"Hesti Nuraeni"}, {i:"0082736113", n:"Hilman Nurdiansyah"}, {i:"0071617300", n:"Irfan Muhammad Ridwan"}, {i:"0077992455", n:"Irfan Setiawan"}, {i:"0073666599", n:"Jaka Wijaya Fitra Laksana"}, {i:"0084733448", n:"Kania Nurhalizah"}, {i:"0078916872", n:"Karmila Sahrani"}, {i:"0087343409", n:"Keisha Chang"}, {i:"0074266174", n:"Khalila Nurannisa"}, {i:"0074561403", n:"Muhamad Yusuf"}, {i:"0077617260", n:"Muhamad Zidan Al Bukhori"}, {i:"0079598360", n:"Muhammad Dante Viera Al'Ghany"}, {i:"0086890262", n:"Nabila Prasetiawati Surahmat"}, {i:"0088211993", n:"Nabila Syifa"}, {i:"0083236306", n:"Nadine Rizkia Putri"}, {i:"0077112009", n:"Najwa Kaila Putri"}, {i:"0077395048", n:"Putri Salma Atifah"}, {i:"0082218043", n:"Salsabila Az-Zahra"}, {i:"0087289564", n:"Siti Salwa Sholihat"}, {i:"0074363901", n:"Widan Maulana"}, {i:"0071271110", n:"Winda Nur Azahra"}],
+        "XII_MPLB": [{i:"0075112988", n:"Ai Jelita Rizkiani Rahayu"}, {i:"0081403462", n:"Alifah Nur Wahdha"}, {i:"0086272919", n:"Amanda Putri Kanza"}, {i:"0086396585", n:"Andini Nurmawati"}, {i:"0075657014", n:"Anggie Indriani"}, {i:"0086468438", n:"Chelsea Kirana Auliaayu"}, {i:"0088947676", n:"Chintia Putri Apriliani"}, {i:"0089849553", n:"Dhea Syahla Alisya"}, {i:"3071373977", n:"Hesti Meilani"}, {i:"0082046903", n:"Indriyanti"}, {i:"0088017215", n:"Kania Rahmawati"}, {i:"0085467366", n:"Keysya Salsabila"}, {i:"0082264560", n:"Meisya Aura Putri"}, {i:"0074548269", n:"Mellysa Wulan Pratama"}, {i:"0079056146", n:"Mufidah Anggri Maulani"}, {i:"3088437367", n:"Nurisa Fitriana"}, {i:"0076529173", n:"Olga Nurul Azim"}, {i:"0064694457", n:"Raden Roro Nayla Nadya Wibowo"}, {i:"0082024610", n:"Radisti Triani Dewi"}, {i:"0087941374", n:"Rara Dwi Thaniya Baehaqi"}, {i:"3072379056", n:"Regi Panjaya"}, {i:"0088510141", n:"Regina Saputri"}, {i:"0072734304", n:"Ririn Dwi Antika"}, {i:"0071552730", n:"Risma Rahmawati"}, {i:"0061097960", n:"Rizkiya Dwi Lutfiyani"}, {i:"0081944743", n:"Sabrina Al-Zahra"}, {i:"0072120485", n:"Salsabil Nuryulianti"}, {i:"0071477174", n:"Santi Susanti"}, {i:"0086052796", n:"Silvi Maharani"}, {i:"0071064032", n:"Siti Nuraeni"}, {i:"0088017180", n:"Siti Nurjanah"}, {i:"0077435388", n:"Tiara Syifa Nurazizah"}, {i:"0081273911", n:"Zahra Nurfadilah"}],
+        "XII_TJKT": [{i:"0083884064", n:"Abdil Ajjaki"}, {i:"0088711791", n:"Ahmad Ibrahimovic"}, {i:"0082856339", n:"Alief Surya Pratama"}, {i:"0094208905", n:"Amelia Nirmala Sari"}, {i:"0051157250", n:"Arief Faturachman"}, {i:"0082047443", n:"Citra Haryanto"}, {i:"0071760704", n:"Dhesta Pratama"}, {i:"0082474268", n:"Dimas Prasetyo Nugroho"}, {i:"0084362118", n:"Diva Althafah"}, {i:"0083431613", n:"Fachri Ahmad Dani"}, {i:"0087803323", n:"Fauzi Ramadhan"}, {i:"0073849506", n:"Habibi Shidqi Al-Ghiffari"}, {i:"0088031583", n:"Karel Abet Nego Jofanka Marha"}, {i:"0085956267", n:"Mahardika Mahmud Suhari"}, {i:"0063352804", n:"Miqdad Abdillah"}, {i:"0083636617", n:"Muhammad Alfin Nur Adil"}, {i:"0035830155", n:"Natasya Yulika Putri Audini"}, {i:"0087364474", n:"Nur Rahma Anggraeni"}, {i:"0034061989", n:"Osa Barokah"}, {i:"0076018231", n:"Pasya Putra Rosdayana"}, {i:"0064097286", n:"Raji Muhammad Hibatullah"}, {i:"0075218045", n:"Rasfa Alwan Syady"}, {i:"0082752705", n:"Revan Rohman Julianto"}, {i:"3029330595", n:"Rizal Sodik Permana"}, {i:"0085806689", n:"Satria Bayu Pratama"}, {i:"0085438867", n:"Siti Sarah Salsabila"}, {i:"0088017342", n:"Wildan Syifa Maulana"}]
+    };
+
+    const accessControl = { 
+        "X_DKV": "NAS10", "X_MPLB": "NAS10", "X_TJKT": "NAS10", 
+        "XI_DKV": "NAS11", "XI_MPLB": "NAS11", "XI_TJKT": "NAS11", 
+        "XII_DKV": "NAS12", "XII_MPLB": "NAS12", "XII_TJKT": "NAS12" 
+    };
+
+    function bukaInputAkses() {
+        document.getElementById('sectionAkses').classList.remove('hidden');
+        document.getElementById('sectionSiswa').classList.add('hidden');
+        document.getElementById('kodeAkses').value = "";
+    }
+
+    function verifikasiAkses() {
+        const kelas = document.getElementById('kelasSelect').value;
+        const inputPass = document.getElementById('kodeAkses').value;
+        if (inputPass === accessControl[kelas]) {
+            document.getElementById('sectionSiswa').classList.remove('hidden');
+            document.getElementById('sectionAkses').classList.add('hidden');
+            renderDaftarSiswa(kelas);
+        } else { alert("Kode Akses Salah! Hubungi Hardianto."); }
+    }
+
+    function renderDaftarSiswa(kelas) {
+        const select = document.getElementById('daftarSiswa');
+        select.innerHTML = "";
+        dataSekolah[kelas].forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s.i; opt.textContent = s.n;
+            select.appendChild(opt);
+        });
+    }
+
+    function filterSiswa() {
+        const query = document.getElementById('cariNama').value.toLowerCase();
+        const options = document.getElementById('daftarSiswa').options;
+        for (let i = 0; i < options.length; i++) {
+            options[i].style.display = options[i].text.toLowerCase().includes(query) ? "block" : "none";
+        }
+    }
+
+    function simpanData() {
+        const select = document.getElementById('daftarSiswa');
+        const kelas = document.getElementById('kelasSelect').value;
+        if (select.selectedIndex === -1) { alert("Pilih nama kamu dulu ya!"); return; }
+        
+        const status = document.querySelector('input[name="status"]:checked').value;
+        const nama = select.options[select.selectedIndex].text;
+        const waktu = new Date().toLocaleString('id-ID');
+
+        const btn = document.getElementById('btnSimpan');
+        btn.innerHTML = "⏳ Lagi dikirim...";
+        btn.disabled = true;
+
+        const payload = { nama: nama, kelas: kelas, status: status, waktu: waktu };
+
+        fetch(SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors", 
+            body: JSON.stringify(payload)
+        })
+        .then(() => {
+            const table = document.getElementById('tabelRekap').getElementsByTagName('tbody')[0];
+            const row = table.insertRow(0);
+            row.innerHTML = `<td>${nama}</td><td>${kelas}</td><td><b style="color:#d63031">${status}</b></td><td>${waktu}</td>`;
+            alert("✅ Mantap! Data sudah masuk ke Google Sheets Kurikulum.");
+        })
+        .catch(err => { alert("❌ Yah, gagal kirim. Cek koneksi internet ya!"); })
+        .finally(() => {
+            btn.innerHTML = "Kirim Laporan ✨";
+            btn.disabled = false;
+        });
+    }
+</script>
+</body>
+</html>
